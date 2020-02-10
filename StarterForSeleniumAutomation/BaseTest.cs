@@ -2,12 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using StarterForSeleniumAutomation.Pages;
-using StarterForSeleniumAutomation.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using StarterForSeleniumAutomation.Enums;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Chrome;
@@ -20,7 +14,6 @@ namespace StarterForSeleniumAutomation.Tests
     {
         #region Fields
         protected HomePage homePage;
-        protected SlownikiDostawcy slownikiDostawcy;
         public static TestContext testContextInstance;
         protected IWebDriver driver;
         protected BrowserType browserType;
@@ -38,29 +31,36 @@ namespace StarterForSeleniumAutomation.Tests
                 testContextInstance = value;
             }
         }
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		[TestInitialize]
-        protected void LaunchBrowser(string URL)
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
         {
-            this.browserType = ConstantTestProperties.BROWSER_TYPE;
-            string driversPath = @"C:\Users\pawel.wojtak\Documents\Projects\Selenium\StarterForSeleniumAutomation\Drivers\chromedriver.exe";
-           if (this.browserType == BrowserType.FireFox)
+            testContextInstance = context;
+        }
+
+        [TestInitialize]
+        protected void LaunchBrowser()
+        {
+            browserType = ConstantTestProperties.BROWSER_TYPE;
+            string driversPath = @"C:\Users\pawel.wojtak\Documents\Projects\SeleniumTestFrameWork\Common\Drivers\chromedriver.exe";
+
+           if (browserType == BrowserType.FireFox)
             {
                 FirefoxOptions options = new FirefoxOptions();
                 options.SetLoggingPreference(LogType.Browser, LogLevel.Severe);
                 this.driver = new FirefoxDriver();
             }
-            else if (this.browserType == BrowserType.Chrome)
+            else if (browserType == BrowserType.Chrome)
             {
                 ChromeOptions options = new ChromeOptions();
                 options.SetLoggingPreference(LogType.Browser, LogLevel.Severe);
-                this.driver = new ChromeDriver(driversPath, options);
+                driver = new ChromeDriver(driversPath, options);
 
             }
-            else if (this.browserType == BrowserType.IE)
+            else if (browserType == BrowserType.IE)
             {
                 InternetExplorerOptions options = new InternetExplorerOptions()
                 {
@@ -69,14 +69,10 @@ namespace StarterForSeleniumAutomation.Tests
                 this.driver = new InternetExplorerDriver(driversPath, options);
             }
 
-            this.driver.Manage().Cookies.DeleteAllCookies();
-            this.driver.Manage().Window.Maximize();
-            this.driver.Navigate().GoToUrl(URL);
-            this.driver.Manage().Logs.GetLog(LogType.Browser);
-
-            //Initialize all page objects, if more pages are add you must add them here also
-            homePage = new HomePage(this.driver);
-            slownikiDostawcy = new SlownikiDostawcy(this.driver);
+            driver.Manage().Cookies.DeleteAllCookies();
+            driver.Manage().Window.Maximize();
+            driver.Navigate().GoToUrl(ConstantStrings.GetUrl());
+            driver.Manage().Logs.GetLog(LogType.Browser);
         }
 
         [TestCleanup]
