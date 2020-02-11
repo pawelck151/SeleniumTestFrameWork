@@ -10,6 +10,7 @@ using OpenQA.Selenium.IE;
 
 namespace StarterForSeleniumAutomation.Tests
 {
+    [TestClass]
     public class BaseTest
     {
         #region Fields
@@ -35,23 +36,16 @@ namespace StarterForSeleniumAutomation.Tests
 
         #region Methods
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            testContextInstance = context;
-        }
-
-        [TestInitialize]
         protected void LaunchBrowser()
         {
             browserType = ConstantTestProperties.BROWSER_TYPE;
-            string driversPath = @"C:\Users\pawel.wojtak\Documents\Projects\SeleniumTestFrameWork\Common\Drivers\chromedriver.exe";
+            string driversPath = @"C:\Users\pawel.wojtak\Documents\Projects\SeleniumTestFrameWork\Common\Drivers\";
 
            if (browserType == BrowserType.FireFox)
             {
                 FirefoxOptions options = new FirefoxOptions();
                 options.SetLoggingPreference(LogType.Browser, LogLevel.Severe);
-                this.driver = new FirefoxDriver();
+                driver = new FirefoxDriver();
             }
             else if (browserType == BrowserType.Chrome)
             {
@@ -66,24 +60,26 @@ namespace StarterForSeleniumAutomation.Tests
                 {
                     IntroduceInstabilityByIgnoringProtectedModeSettings = true,
                 };
-                this.driver = new InternetExplorerDriver(driversPath, options);
+                driver = new InternetExplorerDriver(driversPath, options);
             }
 
             driver.Manage().Cookies.DeleteAllCookies();
             driver.Manage().Window.Maximize();
             driver.Navigate().GoToUrl(ConstantStrings.GetUrl());
             driver.Manage().Logs.GetLog(LogType.Browser);
+
+            homePage = new HomePage(driver);
         }
 
         [TestCleanup]
         public void CloseBrowser()
         {
-            if (testContextInstance.CurrentTestOutcome != UnitTestOutcome.Passed)
+            //if (testContextInstance.CurrentTestOutcome != UnitTestOutcome.Passed)
 
-            {
-                Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();
-                ss.SaveAsFile(@"<C:\");
-            }
+            //{
+            //    Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();
+            //    ss.SaveAsFile(@"C:\\");
+            //}
 
             driver.Quit();
         }
